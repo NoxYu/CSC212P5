@@ -1,7 +1,10 @@
 package edu.smith.cs.csc212.p5;
+
+import java.util.*;
+import edu.smith.cs.csc212.p5.Sudoku.*;
+
 // Reference: https://medium.com/@ssaurel/build-a-sudoku-solver-in-java-part-1-c308bd511481
 // Reference: https://dingo.sbs.arizona.edu/~sandiway/sudoku/examples.html
-
 public class GameLogic {
 	// a grid to solve
 	public static int [][]GRID_TO_SOLVE = {
@@ -23,7 +26,7 @@ public class GameLogic {
 			{0,0,7,1,2,0,6,0,0},
 			{5,0,0,7,0,3,0,0,8},
 			{0,0,6,0,9,5,7,0,0},
-			{9,1,4,6,0,0,0,0,6},
+			{9,1,4,6,0,0,0,0,0},
 			{0,2,0,0,0,0,0,3,7},
 			{8,0,0,5,1,2,0,0,4},
 	};
@@ -52,19 +55,30 @@ public class GameLogic {
 			{0,2,0,0,0,0,1,0,0},
 	};
 	
-	private int[][]board;
+	private int[][] board;
 	
-	public GameLogic(int[][] board) {
-		this.board = new int[9][9];
-		
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.board[i][j] = board[i][j];
+	/*
+	 * initialize sudoku board
+	 */
+	public GameLogic() {
+		for(int i=0;i<9;i++) {
+			for(int j=0;j<9;j++) {
+				board[i][j] = Sudoku.sudokuCells[i][j].number;
 			}
 		}
 	}
+	public GameLogic(int[][] board) {
+		this.board = board;
+	}
 	
-	private boolean isInRow(int row, int number) {
+	 
+	/**
+	 * check if there is a duplicate number in this row
+	 * @param row - the row number of the sudoku cell to-be-checked
+	 * @param number - the number represented by the sudoku cell to-be-checked
+	 * @return true - there is a duplicate number in the same row
+	 */
+	private boolean rowHasDup(int row, int number) {
 		for (int i = 0; i < 9; i++) {
 			if(board[row][i] == number) {
 				return true;
@@ -73,22 +87,23 @@ public class GameLogic {
 		return false;
 	}
 	
-	private boolean isInCol(int col, int number) {
+	
+	private boolean colHasDup(int col, int number) {
 		for (int i = 0; i < 9; i++) {
-			if(board[i][col] == number) {
+			if(board[i][col]== number) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private boolean isInBox(int row, int col, int number) {
+	private boolean boxHasDup(int row, int col, int number) {
 		int r = row - row % 3;
 		int c = col - col % 3;
 		
 		for (int i = r; i < r + 3; i++) {
 			for (int j = c; j < c + 3; j++) {
-				if(board[i][j] == number) {
+				if(board[i][j]== number) {
 					return true;
 				}
 			}
@@ -97,36 +112,36 @@ public class GameLogic {
 	}
 	
 	private boolean isOk(int row, int col, int number) {
-		return !isInRow(row, number) && !isInCol(col, number) && !isInBox(row, col, number);
+		return !rowHasDup(row, number) && !colHasDup(col, number) && !boxHasDup(row, col, number);
 	}
 	
-	//public boolean solve() {
-		//for (int row = 0; row < Size; row++) {
-			//for (int col = 0; col < Size; col++) {
-				//if(board[row][col] == Empty) {
-					//input;
-					//if (isOk(row, col, input)) {
-						//board[row][col] = input;
-					//}
-				//}
-			//}
-		//}
-	//}
-	
-	private boolean correct(int row, int col, int number) {
-		for (row = 0; row < 9; row++) {
-			for (col = 0; col < 9; col++){
-				if(board[row][col] != 0 && isOk(row, col, number) == true) {
+	/**
+	 * 
+	 * @param row
+	 * @param col
+	 * @param number
+	 * @return
+	 */
+	private boolean correct(int number) {
+		for (int row = 0; row < 9; row++) {
+			for (int col = 0; col < 9; col++){
+				if(board[row][col]!= 0 && isOk(row, col, number) == true) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
+	
+	
+/**
+ * 
+ * @return true: the sudoku is solvable; vice versa
+ */
 	public boolean backtracking() {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++){
-				if(board[row][col] == 0) {
+				if(board[row][col]== 0) {
 					for (int input = 1; input <= 9; input++) {
 						if(isOk(row,col,input)) {
 							board[row][col] = input;
@@ -155,7 +170,7 @@ public class GameLogic {
 	}
 	
 	public static void main(String[] args) {
-		GameLogic sudoku = new GameLogic(GRID_TO_SOLVE);
+		GameLogic sudoku = new GameLogic(Easy);
 		System.out.println("Time for Sudoku");
 		sudoku.display();
 		if (sudoku.backtracking() == true){

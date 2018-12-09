@@ -16,7 +16,6 @@ public class Sudoku extends GFX{
 		setupGame();
 	}
 	
-	SudokuState state = SudokuState.hasEmptyEntry;
 	TextBox message = new TextBox("welcome to Sudoku");
 	
 	static Color Ruby = new Color(220,240,250);	
@@ -24,38 +23,36 @@ public class Sudoku extends GFX{
 	static Color Nene = new Color(230,220,225);
 	static Color Yvonne = new Color(220,250,240);
 	
-	/*
-	 * this is the data structure representing the Sudoku board
-	 */
-	List<List<SudokuCell>> rows = new ArrayList<>();
-	List<List<SudokuCell>> colums = new ArrayList<>();
-	List<List<SudokuCell>> box = new ArrayList<>();
 	
 	/*
 	 * this list has all the SudokuCells 
 	 */
-	List<SudokuCell> sudokuCells = new ArrayList<>();
+	public static SudokuCell sudokuCells[][] = new SudokuCell[9][9];
 	
 	//mark the current cell(the cell we just clicked)
 	SudokuCell clicked = null;
 		
 	static class SudokuCell{
+		boolean canChange;
 		boolean mouseHover;
 		Rectangle2D area;
-		int number = 0;
+		int number;
 		TextBox display;
-		boolean gotClicked=false;
+		boolean gotClicked;
 		
 		public SudokuCell(int x, int y, int w, int h) {
 			this.area = new Rectangle2D.Double(x,y,w,h);
 			this.mouseHover=false;
 			display =new TextBox(" ");
+			number = 0;
+			canChange = true;
+			gotClicked = false;
 		}
 		
 		public void draw(Graphics2D g) {
 			if(mouseHover) {
 				g.setColor(Nene);				
-			}else if(gotClicked){
+			}else if(gotClicked&&canChange){
 				g.setColor(Yvonne);
 			}else {
 				g.setColor(Nox);
@@ -89,7 +86,7 @@ public class Sudoku extends GFX{
 				y+=5;
 			}
 			for(int j=1;j<=9;j++) {
-				sudokuCells.add(new SudokuCell(x,y,size,size));
+				sudokuCells[i][j-1] = new SudokuCell(x,y,size,size);
 				x+=size+2;
 				if(j%3==0) {
 					x+=5;
@@ -98,6 +95,20 @@ public class Sudoku extends GFX{
 			y+=size+2;
 			x=0;
 		}
+		
+		/*
+		 * transfer a 2D array from GameLogic to the 3 Lists representing 
+		 * the Sudoku board 
+		 */
+		for(int i=0;i<9;i++) {
+			for(int j=0;j<9;j++) {
+				SudokuCell current = sudokuCells[i][j];
+				if(GameLogic.Easy[i][j]!=0) {
+					current.canChange = false;
+				}				
+				current.number = GameLogic.Easy[i][j];				
+			}
+		}		
 	}
 	
 	@Override
@@ -118,44 +129,34 @@ public class Sudoku extends GFX{
 		keyInput[8] = processKey(KeyEvent.VK_9);
 		
 				
-		for(SudokuCell cell : this.sudokuCells) {
-			cell.mouseHover=cell.contains(mouse);
-			if(cell.contains(click)) {
-				this.clicked = cell;
-				this.clicked.gotClicked = true;
+		for(int i=0;i<9;i++) {
+			for(int j=0;j<9;j++) {
+				SudokuCell cell = sudokuCells[i][j];
+				cell.mouseHover=cell.contains(mouse);
+				if(cell.contains(click)) {
+					this.clicked = cell;
+					this.clicked.gotClicked = true;
+				}
 			}
 		}
 
 		for(int i=0;i<9;i++) {
-			if(keyInput[i]) {
+			if(keyInput[i]&&clicked.canChange) {
 				this.clicked.number = i+1;
 			}
 		}
-
-		
-		//set message base on the gaming status 
-		switch(this.state) {
-		case allValid:
-			this.message.setString("You win");
-			break;
-		case hasEmptyEntry:
-			this.message.setString("waiting for input...");
-		case hasInvalidEntry:
-			this.message.setString("Your Input is not quit right");
-			break;
-		default:
-			break;
-		}
-		
+				
 	}
 	
 	@Override
 	public void draw(Graphics2D g) {
 		g.setColor(Ruby);
 		g.fillRect(0,0,this.getWidth(), this.getHeight());
-		for(SudokuCell cell : this.sudokuCells) {
-			cell.draw(g);
-		}
+		for(int i=0;i<9;i++) {
+			for(int j=0;j<9;j++) {
+				sudokuCells[i][j].draw(g);
+			}
+		}	
 		
 		Rectangle2D centerText = new Rectangle2D.Double(0,this.getHeight()*9/10,
 				this.getWidth(),this.getWidth()/11);
