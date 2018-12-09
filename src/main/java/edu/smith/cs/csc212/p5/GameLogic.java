@@ -19,6 +19,19 @@ public class GameLogic {
 			{0,0,1,9,0,4,5,7,0},
 	};
 	
+	public static int [][]Test = {
+		{0,5,2,4,8,9,3,7,6},
+		{7,3,9,2,5,6,8,4,1},
+		{4,6,8,3,7,1,2,9,5},
+		{3,8,7,1,2,4,6,5,9},
+		{5,9,1,7,6,3,4,2,8},
+		{2,4,6,8,9,5,7,1,3},
+		{9,1,4,6,3,7,5,8,2},
+		{6,2,5,9,4,8,1,3,7},
+		{8,7,3,5,1,2,9,6,4},
+	};
+			
+			
 	public static int [][]Easy = {
 			{1,0,0,4,8,9,0,0,6},
 			{7,3,0,0,0,0,0,4,0},
@@ -55,11 +68,13 @@ public class GameLogic {
 			{0,2,0,0,0,0,1,0,0},
 	};
 	
-	private int[][] board;
+	public static int[][] board = new int[9][9];
 	
-	/*
-	 * initialize sudoku board
-	 */
+	
+	public GameLogic(int[][] board) {
+		this.board = board;
+	}
+	
 	public GameLogic() {
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {
@@ -67,10 +82,6 @@ public class GameLogic {
 			}
 		}
 	}
-	public GameLogic(int[][] board) {
-		this.board = board;
-	}
-	
 	 
 	/**
 	 * check if there is a duplicate number in this row
@@ -78,73 +89,96 @@ public class GameLogic {
 	 * @param number - the number represented by the sudoku cell to-be-checked
 	 * @return true - there is a duplicate number in the same row
 	 */
-	private boolean rowHasDup(int row, int number) {
+	public boolean rowHasDup(int row, int col) {
+		int currentNumber = board[row][col];
 		for (int i = 0; i < 9; i++) {
-			if(board[row][i] == number) {
+			if(i!=col&&board[row][i] == currentNumber) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	
-	private boolean colHasDup(int col, int number) {
+	/**
+	 * check if there is a duplicate number in this column
+	 * @param col - the column number of the sudoku cell to-be-checked
+	 * @param number - the number represented by the sudoku cell to-be-checked
+	 * @return true - there is a duplicate number in the same column
+	 */	
+	public boolean colHasDup(int row, int col) {
+		int currentNumber = board[row][col];
 		for (int i = 0; i < 9; i++) {
-			if(board[i][col]== number) {
+			if(i!=row&&board[i][col]== currentNumber) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private boolean boxHasDup(int row, int col, int number) {
+	/**
+	 * check if there is a duplicate number in this box
+	 * @param row - the row number of the sudoku cell to-be-checked
+	 * @param col - the column number of the sudoku cell to-be-checked
+	 * @param number - the number represented by the sudoku cell to-be-checked
+	 * @return true - there is a duplicate number in the same box
+	 */
+	public boolean boxHasDup(int row, int col) {
 		int r = row - row % 3;
 		int c = col - col % 3;
 		
+		int currentNumber = board[row][col];
 		for (int i = r; i < r + 3; i++) {
 			for (int j = c; j < c + 3; j++) {
-				if(board[i][j]== number) {
+				if(i!=row&&j!=col&&board[i][j]== currentNumber) {
 					return true;
 				}
 			}
 		}
-		return false;
-	}
-	
-	private boolean isOk(int row, int col, int number) {
-		return !rowHasDup(row, number) && !colHasDup(col, number) && !boxHasDup(row, col, number);
+		return false; 
 	}
 	
 	/**
 	 * 
-	 * @param row
-	 * @param col
-	 * @param number
-	 * @return
+	 * @param row - row number of this sudoku cell
+	 * @param col - column number of this sudoku cell 
+	 * @return whether input at this sudoku cell is valid
 	 */
-	private boolean correct(int number) {
+	public boolean isOk(int row, int col) {
+		return !rowHasDup(row, col) && !colHasDup(row, col) && !boxHasDup(row, col);
+	}
+	
+
+	
+	
+	/**
+	 * 
+	 * @return whether all inputs of the sudoku board are valid 
+	 */
+	public boolean correct() {
+		int count = 0;
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++){
-				if(board[row][col]!= 0 && isOk(row, col, number) == true) {
-					return true;
+				int number = board[row][col];
+				if(!isOk(row, col)) {
+					return false;
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	
-/**
- * 
- * @return true: the sudoku is solvable; vice versa
- */
+	/**
+	 * 
+	 * @return true: the sudoku is solvable; vice versa
+	 */
 	public boolean backtracking() {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++){
 				if(board[row][col]== 0) {
 					for (int input = 1; input <= 9; input++) {
-						if(isOk(row,col,input)) {
-							board[row][col] = input;
+						board[row][col] = input;
+						if(isOk(row,col)) {
 							if (backtracking() == true) {
 								return true;
 							} else {

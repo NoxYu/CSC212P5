@@ -1,14 +1,11 @@
 package edu.smith.cs.csc212.p5;
 
 import java.util.*;
-import java.util.List;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 
-import me.jjfoley.gfx.GFX;
-import me.jjfoley.gfx.IntPoint;
-import me.jjfoley.gfx.TextBox;
+import me.jjfoley.gfx.*;
 
 public class Sudoku extends GFX{
 	
@@ -111,6 +108,21 @@ public class Sudoku extends GFX{
 		}		
 	}
 	
+	/**
+	 * check if the sudoku board has any empty grid
+	 * @return
+	 */
+	public boolean hasEmpty() {
+		for(int i=0;i<9;i++) {
+			for(int j=0;j<9;j++) {
+				if(sudokuCells[i][j].number==0) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public void update(double time) {
 		IntPoint mouse =this.getMouseLocation();
@@ -145,7 +157,15 @@ public class Sudoku extends GFX{
 				this.clicked.number = i+1;
 			}
 		}
-				
+		
+		if(!hasEmpty()) {
+			GameLogic game = new GameLogic();
+			if(game.correct()) { 
+				message.setString("Your inputs are all correct; you win!");
+			}else {
+				message.setString("Sorry, you need to fix your input.");				
+			}
+		}
 	}
 	
 	@Override
