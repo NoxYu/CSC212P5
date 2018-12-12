@@ -1,4 +1,4 @@
 # Data Structure Final Project - Sudoku
 
 A game of Sudoku
-partner: Ruby Ru github.com/RubyRu 
+\npartner: Ruby Ru github.com/RubyRu 
