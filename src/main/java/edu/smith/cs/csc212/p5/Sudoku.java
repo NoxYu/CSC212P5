@@ -28,7 +28,7 @@ public class Sudoku extends GFX{
 	GameLogic gameLogic;
 	
 	/*
-	 * this list has all the SudokuCells 
+	 * this list has all the SudokuCells. 
 	 */
 	public static SudokuCell sudokuCells[][] = new SudokuCell[9][9];
 	

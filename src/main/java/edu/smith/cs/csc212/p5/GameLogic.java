@@ -186,6 +186,9 @@ public class GameLogic {
 		return true;
 	}
 	
+	/*
+	 * helper method - displays the entire 2D array
+	 */
 	public void display(int[][] board) {
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
