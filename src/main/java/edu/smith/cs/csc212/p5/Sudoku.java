@@ -8,7 +8,7 @@ import java.awt.geom.*;
 import me.jjfoley.gfx.*;
 
 public class Sudoku extends GFX{
-	
+
 	public Sudoku() {
 		setupGame();
 	}
