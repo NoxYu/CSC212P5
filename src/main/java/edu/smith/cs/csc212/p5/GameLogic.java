@@ -68,13 +68,13 @@ public class GameLogic {
 			{0,2,0,0,0,0,1,0,0},
 	};
 	
-	public static int[][] board = new int[9][9];
+	public int[][] board = new int[9][9];
 	
 	
-	public GameLogic(int[][] board) {
+/*	public GameLogic(int[][] board) {
 		this.board = board;
 	}
-	
+*/	
 	public GameLogic() {
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {
@@ -89,7 +89,7 @@ public class GameLogic {
 	 * @param number - the number represented by the sudoku cell to-be-checked
 	 * @return true - there is a duplicate number in the same row
 	 */
-	public boolean rowHasDup(int row, int col) {
+	public boolean rowHasDup(int[][] board, int row, int col) {
 		int currentNumber = board[row][col];
 		for (int i = 0; i < 9; i++) {
 			if(i!=col&&board[row][i] == currentNumber) {
@@ -105,7 +105,7 @@ public class GameLogic {
 	 * @param number - the number represented by the sudoku cell to-be-checked
 	 * @return true - there is a duplicate number in the same column
 	 */	
-	public boolean colHasDup(int row, int col) {
+	public boolean colHasDup(int[][] board, int row, int col) {
 		int currentNumber = board[row][col];
 		for (int i = 0; i < 9; i++) {
 			if(i!=row&&board[i][col]== currentNumber) {
@@ -122,7 +122,7 @@ public class GameLogic {
 	 * @param number - the number represented by the sudoku cell to-be-checked
 	 * @return true - there is a duplicate number in the same box
 	 */
-	public boolean boxHasDup(int row, int col) {
+	public boolean boxHasDup(int[][] board, int row, int col) {
 		int r = row - row % 3;
 		int c = col - col % 3;
 		
@@ -143,8 +143,8 @@ public class GameLogic {
 	 * @param col - column number of this sudoku cell 
 	 * @return whether input at this sudoku cell is valid
 	 */
-	public boolean isOk(int row, int col) {
-		return !rowHasDup(row, col) && !colHasDup(row, col) && !boxHasDup(row, col);
+	public boolean isOk(int[][] board, int row, int col) {
+		return !rowHasDup(board, row, col) && !colHasDup(board, row, col) && !boxHasDup(board, row, col);
 	}
 	
 
@@ -154,12 +154,12 @@ public class GameLogic {
 	 * 
 	 * @return whether all inputs of the sudoku board are valid 
 	 */
-	public boolean correct() {
+	public boolean correct(int[][] board) {
 		int count = 0;
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++){
 				int number = board[row][col];
-				if(!isOk(row, col)) {
+				if(!isOk(board, row, col)) {
 					return false;
 				}
 			}
@@ -172,18 +172,16 @@ public class GameLogic {
 	 * 
 	 * @return true: the sudoku is solvable; vice versa
 	 */
-	public boolean backtracking() {
+	public boolean backtracking(int[][] board) {
 		for (int row = 0; row < 9; row++) {
 			for (int col = 0; col < 9; col++){
 				if(board[row][col]== 0) {
 					for (int input = 1; input <= 9; input++) {
 						board[row][col] = input;
-						if(isOk(row,col)) {
-							if (backtracking() == true) {
-								return true;
-							} else {
-								board[row][col] = 0;
-							}
+						if(isOk(board, row,col) && backtracking(board) == true) {
+							return true;
+						} else {
+							board[row][col] = 0;
 						}
 					}
 					return false;
@@ -193,7 +191,8 @@ public class GameLogic {
 		return true;
 	}
 	
-	public void display() {
+	
+	public void display(int[][] board) {
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
 				System.out.print(" "+ board[i][j]);
@@ -203,14 +202,15 @@ public class GameLogic {
 		System.out.println();
 	}
 	
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		GameLogic sudoku = new GameLogic(Easy);
 		System.out.println("Time for Sudoku");
-		sudoku.display();
-		if (sudoku.backtracking() == true){
-			sudoku.display();
+		sudoku.display(board);
+		if (sudoku.backtracking(board) == true){
+			sudoku.display(board);
 		} else{
 			System.out.println("not solvable");
 		}
 	}
+*/
 }

@@ -20,6 +20,12 @@ public class Sudoku extends GFX{
 	static Color Nene = new Color(230,220,225);
 	static Color Yvonne = new Color(220,250,240);
 	
+	AnswerButton ab;
+	
+	static int[][] KEY = new int[9][9];
+	static int[][] BOARD = new int[9][9];
+	
+	GameLogic gameLogic;
 	
 	/*
 	 * this list has all the SudokuCells 
@@ -47,7 +53,7 @@ public class Sudoku extends GFX{
 		}
 		
 		public void draw(Graphics2D g) {
-			if(mouseHover) {
+			if(mouseHover&&canChange) {
 				g.setColor(Nene);				
 			}else if(gotClicked&&canChange){
 				g.setColor(Yvonne);
@@ -75,9 +81,46 @@ public class Sudoku extends GFX{
 		}
 	}
 	
+	static class AnswerButton{
+		
+		TextBox display;
+		boolean mouseHover;
+		Rectangle2D area;
+		boolean showAnswer;
+		
+		public AnswerButton(int x, int y, int w, int h) {
+			this.area = new Rectangle2D.Double(x,y,w,h);
+			this.mouseHover=false;
+			display =new TextBox("Show Answer");
+			showAnswer = false;
+		}		
+		
+		public void draw(Graphics2D g) {
+			if(mouseHover) {
+				g.setColor(Yvonne);				
+			}else {
+				g.setColor(Nene);
+			}
+			g.fill(this.area);
+
+			this.display.centerInside(this.area);
+			this.display.setFontSize(12);
+			g.setColor(Nox.darker());
+			this.display.draw(g);			
+		}
+
+		public boolean contains(IntPoint mouse) {			
+			if(mouse==null) {
+				return false;
+			}
+			return this.area.contains(mouse);
+		}
+	}
+	
+	
 	public void setupGame() {
 		int size = getWidth()/11;
-		int x=0, y=0;
+		int x=size/2, y=0;
 		for(int i=0;i<9;i++) {
 			if(i%3==0) {
 				y+=5;
@@ -90,22 +133,38 @@ public class Sudoku extends GFX{
 				}
 			}
 			y+=size+2;
-			x=0;
+			x=size/2;
 		}
 		
+		int buttonW = getWidth()/11;
+		int buttonH = (getHeight()/11)*2;
+		ab = new AnswerButton(size/2, size*10-5, buttonH, buttonW);
+		
+		
+				
 		/*
-		 * transfer a 2D array from GameLogic to the 3 Lists representing 
-		 * the Sudoku board 
+		 * transfer a 2D array from GameLogic to sudokuCells
 		 */
+		BOARD = GameLogic.Easy;
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {
 				SudokuCell current = sudokuCells[i][j];
-				if(GameLogic.Easy[i][j]!=0) {
+				if(BOARD[i][j]!=0) {
+					//grids that already have a number in them cannot be changed
 					current.canChange = false;
 				}				
-				current.number = GameLogic.Easy[i][j];				
+				current.number = BOARD[i][j];
 			}
-		}		
+		}
+		
+		/*
+		 *  set up an answer key
+		 */
+		gameLogic = new GameLogic();
+		KEY = BOARD;
+		gameLogic.backtracking(KEY);
+		gameLogic.display(KEY);
+		
 	}
 	
 	/**
@@ -122,6 +181,21 @@ public class Sudoku extends GFX{
 		}
 		return false;
 	}
+	
+	/**
+	 * 
+	 * @return true - if all inputs to the sudoku board are correct
+	 */
+	public boolean correct() {
+		int[][] cellNums = new int[9][9];
+		for(int i=0;i<9;i++) {
+			for(int j=0;j<9;j++) {
+				cellNums[i][j] = sudokuCells[i][j].number;
+			}
+		}
+		return gameLogic.correct(cellNums);
+	}
+	
 	
 	@Override
 	public void update(double time) {
@@ -152,6 +226,35 @@ public class Sudoku extends GFX{
 			}
 		}
 
+		ab.mouseHover = ab.contains(mouse);
+		if(ab.contains(click)) {
+			if(ab.showAnswer) {
+				//display a solution to the current sudoku board
+				for(int i=0;i<9;i++) {
+					for(int j=0;j<9;j++){
+						if(sudokuCells[i][j].canChange) {
+							sudokuCells[i][j].number = KEY[i][j];
+						}
+			 		}
+				}				
+				ab.showAnswer = false;
+				ab.display.setString("Hide Answer");
+			}else {
+				//hide all answers 
+				for(int i=0;i<9;i++) {
+					for(int j=0;j<9;j++) {
+						if(sudokuCells[i][j].canChange) {
+							sudokuCells[i][j].number = 0;
+						}
+					}
+				}
+				
+				ab.showAnswer= true;
+				ab.display.setString("Show Answer");
+			}
+		}
+		
+		
 		for(int i=0;i<9;i++) {
 			if(keyInput[i]&&clicked.canChange) {
 				this.clicked.number = i+1;
@@ -159,12 +262,13 @@ public class Sudoku extends GFX{
 		}
 		
 		if(!hasEmpty()) {
-			GameLogic game = new GameLogic();
-			if(game.correct()) { 
-				message.setString("Your inputs are all correct; you win!");
+			if(this.correct()) { 
+				message.setString("You win!");
 			}else {
-				message.setString("Sorry, you need to fix your input.");				
+				message.setString("Your Answer is not fully correct");				
 			}
+		}else {
+			message.setString("Welcome to Sudoku");
 		}
 	}
 	
@@ -174,14 +278,20 @@ public class Sudoku extends GFX{
 		g.fillRect(0,0,this.getWidth(), this.getHeight());
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {
+				sudokuCells[i][j].display.setColor(Nox.darker().darker());
 				sudokuCells[i][j].draw(g);
 			}
 		}	
 		
-		Rectangle2D centerText = new Rectangle2D.Double(0,this.getHeight()*9/10,
+		//draw the Show-Answer button
+		ab.display.setColor(Nox.darker().darker());
+		ab.draw(g);
+				
+		
+		Rectangle2D centerText = new Rectangle2D.Double(0,this.getHeight()*9/10 -5,
 				this.getWidth(),this.getWidth()/11);
-		this.message.setFontSize(30.0);
-		this.message.setColor(Nox.darker());
+		this.message.setFontSize(20.0);
+		this.message.setColor(Nox.darker().darker());
 		this.message.centerInside(centerText);
 		this.message.draw(g);		
 	}
