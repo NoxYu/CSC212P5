@@ -5,20 +5,15 @@ import edu.smith.cs.csc212.p5.Sudoku.*;
 
 // Reference: https://medium.com/@ssaurel/build-a-sudoku-solver-in-java-part-1-c308bd511481
 // Reference: https://dingo.sbs.arizona.edu/~sandiway/sudoku/examples.html
+/**
+ * Rules for Sudoku: no duplicate in row/column/box
+ * @author Ruby Ru, Nox Yu
+ *
+ */
 public class GameLogic {
-	// a grid to solve
-	public static int [][]GRID_TO_SOLVE = {
-			{9,0,0,1,0,0,0,0,5},
-			{0,0,5,0,9,0,2,0,1},
-			{8,0,0,0,4,0,0,0,0},
-			{0,0,0,0,8,0,0,0,0},
-			{0,0,0,7,0,0,0,0,0},
-			{0,0,0,0,2,6,0,0,9},
-			{2,0,0,3,0,0,0,0,6},
-			{0,0,0,2,0,0,9,0,0},
-			{0,0,1,9,0,4,5,7,0},
-	};
-	
+	/*
+	 *  grids available
+	 */	
 	public static int [][]Test = {
 		{0,5,2,4,8,9,3,7,6},
 		{7,3,9,2,5,6,8,4,1},
@@ -68,12 +63,19 @@ public class GameLogic {
 			{0,2,0,0,0,0,1,0,0},
 	};
 	
+
 	public int[][] board = new int[9][9];
 	
+	/*
+	 * randomly generate a sudoku board from the available options 
+	 */
 	static Random rn = new Random();
 	public static ArrayList<int [][]> mode = new ArrayList<>(Arrays.asList(Easy,Intermediate,Hard));
 	public static int[][]level = mode.get(rn.nextInt(3));
-	
+
+	/*
+	 * copy the number each sudoku cell contains to GameLogic
+	 */
 	public GameLogic() {
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {

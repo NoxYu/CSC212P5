@@ -7,27 +7,57 @@ import java.awt.geom.*;
 
 import me.jjfoley.gfx.*;
 
+/**
+ * A Game of Sudoku 
+ * @author Ruby Ru, Nox Yu
+ *
+ */
 public class Sudoku extends GFX{
 
 	public Sudoku() {
 		setupGame();
 	}
 	
+	/*
+	 * displays a welcome message
+	 * also displays "you win" if all user inputs are correct 
+	 * otherwise it displays "your inputs have errors"
+	 */
 	TextBox message = new TextBox("welcome to Sudoku");
 	
+	/*
+	 * the timer 
+	 * displays the min:sec of time elapsed 
+	 */
 	TextBox clock = new TextBox("Time:");
 	long start = System.currentTimeMillis();
-	
+
+	/*
+	 * a collection of colors to use for graphics
+	 */
 	static Color Ruby = new Color(220,240,250);	
 	static Color Nox = new Color(200,220,230);
 	static Color Nene = new Color(230,220,225);
 	static Color Yvonne = new Color(220,250,240);
 	
+	/*
+	 * the answer button
+	 * displays answer upon clicking
+	 */
 	AnswerButton ab;
 	
+	/*
+	 * initialize the key to the current sudoku board 
+	 */
 	static int[][] KEY = new int[9][9];
+	/*
+	 * intailize the starting sudoku board 
+	 */
 	static int[][] BOARD = new int[9][9];
 	
+	/*
+	 * initialize GameLogic from the GameLogic class
+	 */
 	GameLogic gameLogic;
 	
 	/*
@@ -35,9 +65,16 @@ public class Sudoku extends GFX{
 	 */
 	public static SudokuCell sudokuCells[][] = new SudokuCell[9][9];
 	
-	//mark the current cell(the cell we just clicked)
+	/*
+	 * mark the current cell(the cell we just clicked)
+	 */
 	SudokuCell clicked = null;
-		
+	
+	/**
+	 * A class for Sudoku cells
+	 * @author Ruby Ru, Nox Yu
+	 *
+	 */
 	static class SudokuCell{
 		boolean canChange;
 		boolean mouseHover;
@@ -55,6 +92,9 @@ public class Sudoku extends GFX{
 			gotClicked = false;
 		}
 		
+		/*
+		 * for drawing the sudoku cell 
+		 */
 		public void draw(Graphics2D g) {
 			if(mouseHover&&canChange) {
 				g.setColor(Nene);				
@@ -76,6 +116,11 @@ public class Sudoku extends GFX{
 			this.display.draw(g);			
 		}
 
+		/**
+		 * 
+		 * @param mouse
+		 * @return true if the mouse is hovering above the sudoku cell 
+		 */
 		public boolean contains(IntPoint mouse) {			
 			if(mouse==null) {
 				return false;
@@ -84,6 +129,11 @@ public class Sudoku extends GFX{
 		}
 	}
 	
+	/**
+	 * A class for the answer button 
+	 * @author Ruby Ru, Nox Yu
+	 *
+	 */
 	static class AnswerButton{
 		
 		TextBox display;
@@ -98,6 +148,10 @@ public class Sudoku extends GFX{
 			showAnswer = false;
 		}		
 		
+		/**
+		 * parameters needed to draw the answer button 
+		 * @param g
+		 */
 		public void draw(Graphics2D g) {
 			if(mouseHover) {
 				g.setColor(Yvonne);				
@@ -112,6 +166,11 @@ public class Sudoku extends GFX{
 			this.display.draw(g);			
 		}
 
+		/**
+		 * 
+		 * @param mouse
+		 * @return true if the mouse is hovering above the sudoku cell
+		 */
 		public boolean contains(IntPoint mouse) {			
 			if(mouse==null) {
 				return false;
@@ -121,7 +180,10 @@ public class Sudoku extends GFX{
 	}
 	
 	
-	public void setupGame() {
+	public void setupGame() {	
+		/*
+		 * draw all the sudoku cells 
+		 */
 		int size = getWidth()/11;
 		int x=size/2, y=0;
 		for(int i=0;i<9;i++) {
@@ -139,6 +201,9 @@ public class Sudoku extends GFX{
 			x=size/2;
 		}
 		
+		/*
+		 * draw the answer button 
+		 */
 		int buttonW = getWidth()/11;
 		int buttonH = (getHeight()/11)*2;
 		ab = new AnswerButton(size/2, size*10-5, buttonH, buttonW);
@@ -205,6 +270,9 @@ public class Sudoku extends GFX{
 		IntPoint mouse =this.getMouseLocation();
 		IntPoint click = this.processClick();
 		
+		/*
+		 * records which key from 1-9 got clicked 
+		 */
 		boolean[] keyInput = new boolean[9];
 		
 		keyInput[0] = processKey(KeyEvent.VK_1);
@@ -217,7 +285,9 @@ public class Sudoku extends GFX{
 		keyInput[7] = processKey(KeyEvent.VK_8);
 		keyInput[8] = processKey(KeyEvent.VK_9);
 		
-				
+		/*
+		 * find the key 1-9 that got clicked 
+		 */
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {
 				SudokuCell cell = sudokuCells[i][j];
@@ -229,11 +299,19 @@ public class Sudoku extends GFX{
 			}
 		}
 
+		/*
+		 * check if the answer button got clicked 
+		 */
 		ab.mouseHover = ab.contains(mouse);
+		/*
+		 * if it got clicked, show the answers 
+		 */
 		if(ab.contains(click)) {
 			if(ab.showAnswer) {
-				//display a solution to the current sudoku board
-				for(int i=0;i<9;i++) {
+				/*
+				 * display a solution to the current sudoku board
+				 */
+				for(int i=0;i<9;i++){
 					for(int j=0;j<9;j++){
 						if(sudokuCells[i][j].canChange) {
 							sudokuCells[i][j].number = KEY[i][j];
@@ -243,7 +321,9 @@ public class Sudoku extends GFX{
 				ab.showAnswer = false;
 				ab.display.setString("Hide Answer");
 			}else {
-				//hide all answers 
+				/*
+				 * hide all answers 
+				 */
 				for(int i=0;i<9;i++) {
 					for(int j=0;j<9;j++) {
 						if(sudokuCells[i][j].canChange) {
@@ -258,12 +338,20 @@ public class Sudoku extends GFX{
 		}
 		
 		
+		/*
+		 * if player clicks an originally empty cell
+		 * they want to answer a number 
+		 */
 		for(int i=0;i<9;i++) {
 			if(keyInput[i]&&clicked.canChange) {
 				this.clicked.number = i+1;
 			}
 		}
 		
+		/*
+		 * when all the cells have been filled,
+		 * check if all inputs are correct
+		 */
 		if(!hasEmpty()) {
 			if(this.correct()) { 
 				message.setString("You win!");
@@ -274,6 +362,9 @@ public class Sudoku extends GFX{
 			message.setString("Welcome to Sudoku");
 		}
 		
+		/*
+		 * for calcutating the elapsed time 
+		 */
 		long finish = System.currentTimeMillis();
 		long timeElapsed = (finish - start)/1000;
 		clock.setString("Time Elapsed: "+timeElapsed/60+":"+timeElapsed%60+" (min:s)");
@@ -282,6 +373,9 @@ public class Sudoku extends GFX{
 	
 	@Override
 	public void draw(Graphics2D g) {
+		/*
+		 * draw the sudoku cells 
+		 */
 		g.setColor(Ruby);
 		g.fillRect(0,0,this.getWidth(), this.getHeight());
 		for(int i=0;i<9;i++) {
@@ -291,11 +385,16 @@ public class Sudoku extends GFX{
 			}
 		}	
 		
-		//draw the Show-Answer button
+		/*
+		 * draw the Show-Answer button
+		 */
 		ab.display.setColor(Nox.darker().darker());
 		ab.draw(g);
 				
 		
+		/*
+		 * draw the "welcome"/"you win"/"input has error" message 
+		 */
 		Rectangle2D centerText = new Rectangle2D.Double(0,this.getHeight()*9/10 -5,
 				this.getWidth(),this.getWidth()/11);
 		this.message.setFontSize(20.0);
@@ -303,6 +402,9 @@ public class Sudoku extends GFX{
 		this.message.centerInside(centerText);
 		this.message.draw(g);
 		
+		/*
+		 * draw the timer 
+		 */
 		Rectangle2D centerText2 = new Rectangle2D.Double(0,this.getHeight()*9/10,
 				this.getWidth(),this.getWidth()/11-50);
 		this.clock.setFontSize(20.0);
