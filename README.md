@@ -1,4 +1,5 @@
-# P5 Skeleton
+# Data Structure Final Project - Sudoku
 
-This is a basically empty project (it draws a red window) in case you're doing Graphics for P5 and don't want to cannibalize one of your older projects.
+A game of Sudoku
 
+partner: Ruby Ru github.com/RubyRu 
