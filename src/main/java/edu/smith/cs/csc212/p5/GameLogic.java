@@ -5,7 +5,7 @@ import edu.smith.cs.csc212.p5.Sudoku.*;
 
 // Reference: https://medium.com/@ssaurel/build-a-sudoku-solver-in-java-part-1-c308bd511481
 // Reference: https://dingo.sbs.arizona.edu/~sandiway/sudoku/examples.html
-/**
+/** 
  * Rules for Sudoku: no duplicate in row/column/box
  * @author Ruby Ru, Nox Yu
  *

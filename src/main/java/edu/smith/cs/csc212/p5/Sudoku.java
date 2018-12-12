@@ -9,7 +9,7 @@ import me.jjfoley.gfx.*;
 
 /**
  * A Game of Sudoku 
- * @author Ruby Ru, Nox Yu
+ * @author Ruby Ru, Nox Yu 
  *
  */
 public class Sudoku extends GFX{
