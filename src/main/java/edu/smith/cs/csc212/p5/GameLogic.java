@@ -70,6 +70,10 @@ public class GameLogic {
 	
 	public int[][] board = new int[9][9];
 	
+	static Random rn = new Random();
+	public static ArrayList<int [][]> mode = new ArrayList<>(Arrays.asList(Easy,Intermediate,Hard));
+	public static int[][]level = mode.get(rn.nextInt(3));
+	
 	public GameLogic() {
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {

@@ -15,6 +15,9 @@ public class Sudoku extends GFX{
 	
 	TextBox message = new TextBox("welcome to Sudoku");
 	
+	TextBox clock = new TextBox("Time:");
+	long start = System.currentTimeMillis();
+	
 	static Color Ruby = new Color(220,240,250);	
 	static Color Nox = new Color(200,220,230);
 	static Color Nene = new Color(230,220,225);
@@ -145,7 +148,7 @@ public class Sudoku extends GFX{
 		/*
 		 * transfer a 2D array from GameLogic to sudokuCells
 		 */
-		BOARD = GameLogic.Easy;
+		BOARD = GameLogic.level;
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {
 				SudokuCell current = sudokuCells[i][j];
@@ -270,6 +273,11 @@ public class Sudoku extends GFX{
 		}else {
 			message.setString("Welcome to Sudoku");
 		}
+		
+		long finish = System.currentTimeMillis();
+		long timeElapsed = (finish - start)/1000;
+		clock.setString("Time Elapsed: "+timeElapsed/60+":"+timeElapsed%60+" (min:s)");
+		
 	}
 	
 	@Override
@@ -293,7 +301,15 @@ public class Sudoku extends GFX{
 		this.message.setFontSize(20.0);
 		this.message.setColor(Nox.darker().darker());
 		this.message.centerInside(centerText);
-		this.message.draw(g);		
+		this.message.draw(g);
+		
+		Rectangle2D centerText2 = new Rectangle2D.Double(0,this.getHeight()*9/10,
+				this.getWidth(),this.getWidth()/11-50);
+		this.clock.setFontSize(20.0);
+		this.clock.setColor(Nox.darker());
+		this.clock.centerInside(centerText2);
+		this.clock.draw(g);
+		
 	}
 	
 	
