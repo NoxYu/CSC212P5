@@ -2,8 +2,8 @@ package edu.smith.cs.csc212.p5;
 
 import java.util.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Rectangle2D;
+import java.awt.event.*;
+import java.awt.geom.*;
 
 import me.jjfoley.gfx.*;
 
@@ -269,7 +269,7 @@ public class Sudoku extends GFX{
 			}
 		}else {
 			message.setString("Welcome to Sudoku");
-		} 
+		}
 	}
 	
 	@Override

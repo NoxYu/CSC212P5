@@ -70,11 +70,6 @@ public class GameLogic {
 	
 	public int[][] board = new int[9][9];
 	
-	
-/*	public GameLogic(int[][] board) {
-		this.board = board;
-	}
-*/	
 	public GameLogic() {
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<9;j++) {
@@ -202,15 +197,4 @@ public class GameLogic {
 		System.out.println();
 	}
 	
-/*	public static void main(String[] args) {
-		GameLogic sudoku = new GameLogic(Easy);
-		System.out.println("Time for Sudoku");
-		sudoku.display(board);
-		if (sudoku.backtracking(board) == true){
-			sudoku.display(board);
-		} else{
-			System.out.println("not solvable");
-		}
-	}
-*/
 }
