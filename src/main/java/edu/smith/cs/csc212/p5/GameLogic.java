@@ -163,7 +163,7 @@ public class GameLogic {
 					return false;
 				}
 			}
-		}
+		} 
 		return true;
 	}
 	

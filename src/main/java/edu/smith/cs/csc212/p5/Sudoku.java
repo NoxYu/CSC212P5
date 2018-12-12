@@ -269,7 +269,7 @@ public class Sudoku extends GFX{
 			}
 		}else {
 			message.setString("Welcome to Sudoku");
-		}
+		} 
 	}
 	
 	@Override
